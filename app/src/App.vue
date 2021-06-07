@@ -18,7 +18,7 @@
 <script>
 
 // CONFIG
-const factoryContractAddress = "0xb559C2F7538f1a270D1d868B37076aaa487B0C4d";
+const factoryContractAddress = "0x...";
 
 // vue components
 import Wait from "./components/Wait.vue";
