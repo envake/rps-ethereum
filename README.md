@@ -4,6 +4,9 @@ rock-paper-scissors implemented as dapp + vuejs frontend
 
 ## Project setup
 ```
+cd app
+```
+```
 npm install
 ```
 
