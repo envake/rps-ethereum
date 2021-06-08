@@ -1,5 +1,5 @@
 <template>
-  <div class="info">Current address: {{ currentAddress }} </div>
+  <div class="info">{{ addressInfo }}</div>
   <!--<div class="left">Player 1 address: {{ player1Address }} </div>
   <div class="left">Player 2 address: {{ player2Address }} </div>
   
@@ -50,12 +50,13 @@ export default {
   },
   data() {
     return {
+      addressInfo: " ",
       showStart: true,
       showWait: false,
       showCommit: false,
       showReveal: false,
       showEnd: false,
-      currentAddress: "",
+      selectedAddress: "",
       player1Address: "",
       player2Address: "",
       status: "",
@@ -77,7 +78,7 @@ export default {
       signer = provider.getSigner();
       //console.log(signer);
       factoryContract = new ethers.Contract(factoryContractAddress, factoryABI, signer);
-      this.currentAddress = window.ethereum.selectedAddress;
+      this.selectedAddress = window.ethereum.selectedAddress;
 
       // connect account
       window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -89,11 +90,12 @@ export default {
     // event handlers
     window.ethereum.on("accountsChanged", (accounts) => {
       console.log("account changed to " + accounts[0]);
-      this.currentAddress = accounts[0];
+      this.selectedAddress = accounts[0];
     });
 
     factoryContract.on("MatchFound", (p1Address, p2Address, contractAddress) => {
       console.log(this);
+      console.log("Your game contract is at: " + contractAddress)
       this.player1Address = p1Address;
       this.player2Address = p2Address;
       gameContract = new ethers.Contract(contractAddress, gameABI, signer);
@@ -132,10 +134,22 @@ export default {
         }
         this.showEnd = true;
       });
+      gameContract.on("GameOver", () => {
+        console.log(this);
+        this.showEnd = false;
+        this.showStart = true;
+      });
     });
   },
   methods: {
     start() {
+      console.log("using address: " + this.selectedAddress)
+      if (this.selectedAddress == null) {
+        throw new Error("failed to get MetaMask address");
+      }
+      // set player address
+      this.addressInfo = this.selectedAddress;
+
       // request game
       var promise = factoryContract.requestGame();
       var self = this;
