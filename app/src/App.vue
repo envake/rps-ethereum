@@ -1,5 +1,6 @@
 <template>
   <div class="info">Selected address: {{selectedAddress }}</div>
+  <div class="info">Playing with: {{ playerAddress }}</div>
   <!--<div class="left">Player 1 address: {{ player1Address }} </div>
   <div class="left">Player 2 address: {{ player2Address }} </div>
   
@@ -10,7 +11,7 @@
     <start v-if="showStart" @start="start"></start>
     <commit v-if="showCommit" @commit-choice="commit"></commit>
     <reveal v-if="showReveal" @reveal-choice="reveal"></reveal>
-    <end v-if="showEnd" v-bind:result=result @payout-game="payout"></end>
+    <end v-if="showEnd" v-bind:result=result v-bind:canPayout=canPayout @payout-game="payout"></end>
     <wait v-if="showWait" v-bind:message=status v-bind:showLoadingAnimation=statusLoading v-bind:anotherMessage=anotherStatus></wait>
   </div>
 </template>
@@ -63,6 +64,7 @@ export default {
       anotherStatus: "",
       statusLoading: true,
       result: "",
+      canPayout: false,
       choice: "",
       secret: ""
     }
@@ -118,12 +120,29 @@ export default {
         switch(_result) {
           case 1:
             this.result = "Draw!";
+            this.canPayout = true;
             break;
           case 2:
-            this.result = "Player 1 wins!";
+            console.log(this.playerAddress.toLowerCase())
+            console.log(this.player1Address.toLowerCase())
+            if (this.playerAddress.toLowerCase() == this.player1Address.toLowerCase()) {
+              this.result = "You win!";
+              this.canPayout = true;
+            }
+            else {
+              this.result = "You lose!";
+            }
             break;
           case 3:
-            this.result = "Player 2 wins!";
+            console.log(this.playerAddress.toLowerCase())
+            console.log(this.player2Address.toLowerCase())
+            if (this.playerAddress.toLowerCase() == this.player2Address.toLowerCase()) {
+              this.result = "You win!";
+              this.canPayout = true;
+            }
+            else {
+              this.result = "You lose!";
+            }
             break;
           default:
             this.result = "Couldn't retrieve the game result :("

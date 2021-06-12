@@ -27,7 +27,7 @@
 	<div class="part">
 		<!--<label for="secret">Your Secret: </label>-->
 		<input type="text" placeholder="Your password" id="secret" v-model="secret">
-		<button v-on:click="commit">Commit</button>
+		<button v-on:click="commit">Commit (0.01 ether)</button> 
 	</div>
 </template>
 

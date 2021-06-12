@@ -1,7 +1,7 @@
 <template>
 	<h2>{{ result }}</h2>
 	<div>
-		<button v-on:click="payout()">Pay me off!</button>
+		<button v-if="canPayout" v-on:click="payout()">Pay me off!</button>
 	</div>
 </template>
 
@@ -11,7 +11,8 @@ export default {
 	name: 'End',
 	emits: ["payoutGame"],
 	props: {
-		result: String
+		result: String,
+		canPayout: Boolean
 	},
 	data () {
 		return {
