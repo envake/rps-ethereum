@@ -1,5 +1,5 @@
 <template>
-  <div class="info">{{ addressInfo }}</div>
+  <div class="info">Selected address: {{selectedAddress }}</div>
   <!--<div class="left">Player 1 address: {{ player1Address }} </div>
   <div class="left">Player 2 address: {{ player2Address }} </div>
   
@@ -50,13 +50,13 @@ export default {
   },
   data() {
     return {
-      addressInfo: " ",
       showStart: true,
       showWait: false,
       showCommit: false,
       showReveal: false,
       showEnd: false,
       selectedAddress: "",
+      playerAddress: "",
       player1Address: "",
       player2Address: "",
       status: "",
@@ -65,23 +65,21 @@ export default {
       result: "",
       choice: "",
       secret: ""
-      //signer: null,
-      //factoryContract: null,
-      //gameContract: null
     }
   },
-  beforeMount() {
+  async beforeMount() {
     // check for MetaMask
     if (typeof window.ethereum !== 'undefined' && window.ethereum.isMetaMask) {
+      // connect account
+      const res = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      this.selectedAddress = res[0];
+      console.log(this.selectedAddress);
+
       // initialize contract instance
       let provider = new ethers.providers.Web3Provider(window.ethereum);
       signer = provider.getSigner();
       //console.log(signer);
-      factoryContract = new ethers.Contract(factoryContractAddress, factoryABI, signer);
-      this.selectedAddress = window.ethereum.selectedAddress;
-
-      // connect account
-      window.ethereum.request({ method: 'eth_requestAccounts' });
+      factoryContract = new ethers.Contract(factoryContractAddress, factoryABI, signer);      
     }
     else {
       alert("This App requires MetaMask. (https://metamask.io/)");
@@ -94,7 +92,7 @@ export default {
     });
 
     factoryContract.on("MatchFound", (p1Address, p2Address, contractAddress) => {
-      console.log(this);
+      //console.log(this);
       console.log("Your game contract is at: " + contractAddress)
       this.player1Address = p1Address;
       this.player2Address = p2Address;
@@ -147,8 +145,8 @@ export default {
       if (this.selectedAddress == null) {
         throw new Error("failed to get MetaMask address");
       }
-      // set player address
-      this.addressInfo = this.selectedAddress;
+      // set player address to currently selected address
+      this.playerAddress = this.selectedAddress;
 
       // request game
       var promise = factoryContract.requestGame();
